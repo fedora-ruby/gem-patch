@@ -3,8 +3,8 @@ require "rubygems/installer"
 require "rubygems/patcher"
 
 
-class TestGemPatch < Gem::TestCase
-	def setup
+class TestGemPatch < Gem::TestCases
+  def setup
     super
 
     @gems_dir  = File.join @tempdir, 'gems'
