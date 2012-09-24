@@ -4,7 +4,7 @@ require "rubygems/patcher"
 
 
 class TestGemPatch < Gem::TestCase
-	def setup
+  def setup
     super
 
     @gems_dir  = File.join @tempdir, 'gems'
