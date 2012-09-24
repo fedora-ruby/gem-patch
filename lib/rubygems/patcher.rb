@@ -1,7 +1,6 @@
 require "rbconfig"
 require "tmpdir"
 require "rubygems/installer"
-#require "rubygems/specification"
 
 class Gem::Patcher
   include Gem::UserInteraction
@@ -15,7 +14,7 @@ class Gem::Patcher
   # Patch the gem, move the new patched gem to working directory and return the path
 
   def patch_with(patches, strip_number)
-    package = Gem::Package.new @gemfile
+    package = Gem::Installer.new @gemfile
 
     # Create a temporary dir
     tmpdir      = Dir.mktmpdir
@@ -24,7 +23,7 @@ class Gem::Patcher
 
     # Unpack
     info "Unpacking gem '#{basename}' in " + @target_dir
-    package.extract_files @target_dir
+    package.unpack @target_dir
 
     # Apply all patches
     patches.each do |patch|
@@ -33,7 +32,6 @@ class Gem::Patcher
     end
 
     # Files for gemspec, add new files and remove old ones
-    # https://github.com/rubygems/rubygems/blob/master/lib/rubygems/specification.rb#L294
     @files = [] 
 
     files_in_gem.each do |file|
@@ -42,16 +40,13 @@ class Gem::Patcher
 
     # New gem file that will be generated
     patched_gem = package.spec.file_name
-    patched_package = Gem::Package.new patched_gem
 
-    patched_package.spec = package.spec.clone
-    patched_package.spec.files = @files
-
-    #patched_package.spec.rubygems_version = '2.0.a'
+    package.spec.files = @files
+    patched_package = Gem::Builder.new package.spec.clone
 
     # Change dir and build the patched gem
     Dir.chdir @target_dir do
-      patched_package.build false
+      patched_package.build
     end
 
     # Move the newly generated gem to working directory

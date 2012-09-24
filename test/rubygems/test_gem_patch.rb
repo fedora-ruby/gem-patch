@@ -26,9 +26,8 @@ class TestGemPatch < Gem::TestCase
     patched_gem = patcher.patch_with(patches, 1)
 
     # Unpack
-    puts patched_gem
-    package = Gem::Package.new patched_gem
-    package.extract_files @gems_dir
+    package = Gem::Installer.new patched_gem
+    package.unpack @gems_dir
 
     assert_equal util_patched_file, util_file_contents('foo.rb')
   end
@@ -42,13 +41,13 @@ class TestGemPatch < Gem::TestCase
     patches = []
     patches << util_bake_new_file_patch
 
-    # Create a new patched gem in @gems_fir
+    # Creates new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
     patched_gem = patcher.patch_with(patches, 0)
 
     # Unpack
-    package = Gem::Package.new patched_gem
-    package.extract_files @gems_dir
+    package = Gem::Installer.new patched_gem
+    package.unpack @gems_dir
 
     assert_equal util_original_file, util_file_contents('bar.rb')
   end
@@ -63,13 +62,13 @@ class TestGemPatch < Gem::TestCase
     patches << util_bake_new_file_patch
     patches << util_bake_delete_file_patch
 
-    # Create a new patched gem in @gems_fir
+    # Creates new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
     patched_gem = patcher.patch_with(patches, 0)
 
     # Unpack
-    package = Gem::Package.new patched_gem
-    package.extract_files @gems_dir
+    package = Gem::Installer.new patched_gem
+    package.unpack @gems_dir
 
     # Only foo.rb should stay in /lib, bar.rb should be gone
     assert_raises(RuntimeError, 'File not found') {
@@ -86,13 +85,13 @@ class TestGemPatch < Gem::TestCase
     patches = []
     patches << util_bake_incorrect_patch
 
-    # Create a new patched gem in @gems_fir
+    # Creates new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
     patched_gem = patcher.patch_with(patches, 0)
 
     # Unpack
-    package = Gem::Package.new patched_gem
-    package.extract_files @gems_dir
+    package = Gem::Installer.new patched_gem
+    package.unpack @gems_dir
 
     assert_equal util_original_file, util_file_contents('foo.rb')
     assert_equal util_original_gemspec, util_current_gemspec
@@ -157,12 +156,13 @@ class TestGemPatch < Gem::TestCase
   def util_bake_testing_gem
     util_bake_original_gem_files
 
-    test_package = Gem::Package.new 'foo-0.gem'
-    test_package.spec = Gem::Specification.load(File.join(@gems_dir, 'foo-0.gemspec'))
+    #test_package = Gem::Package.open 'foo-0.gem'
+    spec = Gem::Specification.load(File.join(@gems_dir, 'foo-0.gemspec'))
 
     # Build 
     Dir.chdir @gems_dir do
-      test_package.build false
+      builder = Gem::Builder.new spec
+      builder.build
     end
 
     File.join(@gems_dir, 'foo-0.gem')
