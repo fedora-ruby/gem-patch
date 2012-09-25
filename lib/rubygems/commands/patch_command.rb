@@ -12,13 +12,21 @@ class Gem::Commands::PatchCommand < Gem::Command
     end
   end
 
-  def arguments
-    # is alingment alright?
-    "GEMFILE            path to the gem file to patch
-     PATCH [PATCH ...]  list of patches to apply"
+  def arguments # :nodoc:
+    args = <<-EOF
+          GEMFILE           path to the gem file to patch
+          PATCH [PATCH ...] list of patches to apply
+    EOF
+    return args.gsub(/^\s+/, '')
   end
 
-  def usage
+  def description # :nodoc:
+    <<-EOF
+
+    EOF
+  end
+
+  def usage # :nodoc:
     "#{program_name} GEMFILE PATCH [PATCH ...]"
   end
 

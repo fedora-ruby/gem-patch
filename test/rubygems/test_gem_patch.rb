@@ -1,46 +1,44 @@
 require "rubygems/test_case"
-require "rubygems/installer"
 require "rubygems/patcher"
 
 
-class TestGemPatch < Gem::TestCases
+class TestGemPatch < Gem::TestCase
   def setup
     super
 
     @gems_dir  = File.join @tempdir, 'gems'
     @lib_dir = File.join @tempdir, 'gems', 'lib'
     FileUtils.mkdir_p @lib_dir
-	end
+  end
 
   ##
   # Test changing a file in a gem with -p1 option
 
   def test_change_file_patch
-    gemfile = util_bake_testing_gem
+    gemfile = bake_testing_gem
 
     patches = []
-    patches << util_bake_change_file_patch
+    patches << bake_change_file_patch
 
     # Creates new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
     patched_gem = patcher.patch_with(patches, 1)
 
     # Unpack
-    puts patched_gem
     package = Gem::Package.new patched_gem
     package.extract_files @gems_dir
 
-    assert_equal util_patched_file, util_file_contents('foo.rb')
+    assert_equal patched_file, file_contents('foo.rb')
   end
 
   ##
   # Test adding a file into a gem with -p0 option
 
   def test_new_file_patch
-    gemfile = util_bake_testing_gem
+    gemfile = bake_testing_gem
 
     patches = []
-    patches << util_bake_new_file_patch
+    patches << bake_new_file_patch
 
     # Create a new patched gem in @gems_fir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
@@ -50,18 +48,18 @@ class TestGemPatch < Gem::TestCases
     package = Gem::Package.new patched_gem
     package.extract_files @gems_dir
 
-    assert_equal util_original_file, util_file_contents('bar.rb')
+    assert_equal original_file, file_contents('bar.rb')
   end
 
   ##
   # Test adding and deleting a file in a gem with -p0 option
 
   def test_delete_file_patch
-    gemfile = util_bake_testing_gem
+    gemfile = bake_testing_gem
 
     patches = []
-    patches << util_bake_new_file_patch
-    patches << util_bake_delete_file_patch
+    patches << bake_new_file_patch
+    patches << bake_delete_file_patch
 
     # Create a new patched gem in @gems_fir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
@@ -73,7 +71,7 @@ class TestGemPatch < Gem::TestCases
 
     # Only foo.rb should stay in /lib, bar.rb should be gone
     assert_raises(RuntimeError, 'File not found') {
-      util_file_contents(File.join @lib_dir, 'bar.rb')
+      file_contents(File.join @lib_dir, 'bar.rb')
     }
   end
 
@@ -81,10 +79,10 @@ class TestGemPatch < Gem::TestCases
   # Incorrect patch, nothing happens
 
   def test_gem_should_not_change
-    gemfile = util_bake_testing_gem
+    gemfile = bake_testing_gem
 
     patches = []
-    patches << util_bake_incorrect_patch
+    patches << bake_incorrect_patch
 
     # Create a new patched gem in @gems_fir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
@@ -94,68 +92,68 @@ class TestGemPatch < Gem::TestCases
     package = Gem::Package.new patched_gem
     package.extract_files @gems_dir
 
-    assert_equal util_original_file, util_file_contents('foo.rb')
-    assert_equal util_original_gemspec, util_current_gemspec
+    assert_equal original_file, file_contents('foo.rb')
+    assert_equal original_gemspec, current_gemspec
   end
 
-  def util_bake_change_file_patch
+  def bake_change_file_patch
     patch_path = File.join(@gems_dir, 'change_file.patch')
 
     File.open(patch_path, 'w') do |f|
-      f.write util_change_file_patch
+      f.write change_file_patch
     end
 
     patch_path
   end
 
-  def util_bake_new_file_patch
+  def bake_new_file_patch
     patch_path = File.join(@gems_dir, 'new_file.patch')
 
     File.open(patch_path, 'w') do |f|
-      f.write util_new_file_patch
+      f.write new_file_patch
     end
 
     patch_path
   end
 
-  def util_bake_delete_file_patch
+  def bake_delete_file_patch
     patch_path = File.join(@gems_dir, 'delete_file.patch')
 
     File.open(patch_path, 'w') do |f|
-      f.write util_delete_file_patch
+      f.write delete_file_patch
     end
 
     patch_path
   end
 
-  def util_bake_incorrect_patch
+  def bake_incorrect_patch
     patch_path = File.join(@gems_dir, 'incorrect.patch')
 
     File.open(patch_path, 'w') do |f|
-      f.write util_incorrect_patch
+      f.write incorrect_patch
     end
 
     patch_path
   end
 
-  def util_bake_original_gem_files
+  def bake_original_gem_files
     # Create /lib/foo.rb
     file_path = File.join(@lib_dir, 'foo.rb')
 
     File.open(file_path, 'w') do |f|
-      f.write util_original_file
+      f.write original_file
     end
 
     # Create .gemspec file
     gemspec_path = File.join(@gems_dir, 'foo-0.gemspec')
 
     File.open(gemspec_path, 'w') do |f|
-      f.write util_original_gemspec
+      f.write original_gemspec
     end
   end
 
-  def util_bake_testing_gem
-    util_bake_original_gem_files
+  def bake_testing_gem
+    bake_original_gem_files
 
     test_package = Gem::Package.new 'foo-0.gem'
     test_package.spec = Gem::Specification.load(File.join(@gems_dir, 'foo-0.gemspec'))
@@ -168,32 +166,20 @@ class TestGemPatch < Gem::TestCases
     File.join(@gems_dir, 'foo-0.gem')
   end
 
-  def util_current_gemspec
+  def current_gemspec
     gemspec_path = File.join(@gems_dir, 'foo-0.gemspec')
-    gemspec_content = ''
-
-    File.open(gemspec_path, 'r') do |file|
-      while line = file.gets
-        gemspec_content << line
-      end
-    end
-
-    gemspec_content
+    
+    IO.read(gemspec_path)
   end
 
   ##
   # Get the content of the given file in @lib_dir
 
-  def util_file_contents(file)
+  def file_contents(file)
     file_path = File.join(@lib_dir, file)
-    file_content = ''
 
     begin
-      File.open(file_path, 'r') do |file|
-        while line = file.gets
-          file_content << line
-        end
-      end
+      file_content = IO.read(file_path)
     rescue 
       raise RuntimeError, 'File not found'
     end
@@ -201,7 +187,7 @@ class TestGemPatch < Gem::TestCases
     file_content
   end
 
-  def util_original_gemspec
+  def original_gemspec
     <<-EOF
       Gem::Specification.new do |s|
         s.platform = Gem::Platform::RUBY
@@ -217,7 +203,7 @@ class TestGemPatch < Gem::TestCases
     EOF
   end
 
-  def util_original_file
+  def original_file
     <<-EOF
       module Foo
         def bar
@@ -227,7 +213,7 @@ class TestGemPatch < Gem::TestCases
     EOF
   end
 
-  def util_patched_file
+  def patched_file
     <<-EOF
       module Foo
         class Bar
@@ -239,62 +225,62 @@ class TestGemPatch < Gem::TestCases
     EOF
   end
 
-  def util_change_file_patch
+  def change_file_patch
     <<-EOF
-diff -u a/lib/foo.rb b/lib/foo.rb
---- a/lib/foo.rb 
-+++ b/lib/foo.rb
-@@ -1,6 +1,8 @@
-       module Foo
--        def bar
--          'Original'
-+        class Bar
-+          def foo_bar
-+            'Patched'
-+          end
-         end
-       end
+      diff -u a/lib/foo.rb b/lib/foo.rb
+      --- a/lib/foo.rb 
+      +++ b/lib/foo.rb
+      @@ -1,6 +1,8 @@
+             module Foo
+      -        def bar
+      -          'Original'
+      +        class Bar
+      +          def foo_bar
+      +            'Patched'
+      +          end
+               end
+            end
     EOF
   end
 
-  def util_new_file_patch
+  def new_file_patch
     <<-EOF
-diff lib/bar.rb lib/bar.rb
---- /dev/null
-+++ lib/bar.rb
-@@ -0,0 +1,5 @@
-+      module Foo
-+        def bar
-+          'Original'
-+        end
-+      end
+      diff lib/bar.rb lib/bar.rb
+      --- /dev/null
+      +++ lib/bar.rb
+      @@ -0,0 +1,5 @@
+      +      module Foo
+      +        def bar
+      +          'Original'
+      +        end
+      +      end
     EOF
   end
 
-  def util_delete_file_patch
+  def delete_file_patch
     <<-EOF
-diff lib/bar.rb lib/bar.rb
---- lib/bar.rb
-+++ /dev/null
-@@ -1,5 +0,0 @@
--      module Foo
--        def bar
--          'Original'
--        end
--      end
+      diff lib/bar.rb lib/bar.rb
+      --- lib/bar.rb
+      +++ /dev/null
+      @@ -1,5 +0,0 @@
+      -      module Foo
+      -        def bar
+      -          'Original'
+      -        end
+      -      end
     EOF
   end
 
-  def util_incorrect_patch
+  def incorrect_patch
     <<-EOF
-diff lib/foo.rb lib/foo.rb
---- lib/foo.rb
-+++ /dev/null
--      module Foo
--        def bar
--          'Original'
--        end
--      end
+      diff lib/foo.rb lib/foo.rb
+      --- lib/foo.rb
+      +++ /dev/null
+      -      module Foo
+      -        def bar
+      -          'Original'
+      -        end
+      -      end
     EOF
   end
 end

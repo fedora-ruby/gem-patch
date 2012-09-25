@@ -1,7 +1,6 @@
 require "rbconfig"
 require "tmpdir"
-require "rubygems/installer"
-#require "rubygems/specification"
+require "rubygems/package"
 
 class Gem::Patcher
   include Gem::UserInteraction
@@ -9,22 +8,18 @@ class Gem::Patcher
   def initialize(gemfile, output_dir)
     @gemfile    = gemfile
     @output_dir = output_dir
+
+    # @target_dir is a temporary directory where the gem files live
+    tmpdir      = Dir.mktmpdir
+    basename    = File.basename(gemfile, '.gem')
+    @target_dir = File.join(tmpdir, basename)
   end
 
   ##
   # Patch the gem, move the new patched gem to working directory and return the path
 
   def patch_with(patches, strip_number)
-    package = Gem::Package.new @gemfile
-
-    # Create a temporary dir
-    tmpdir      = Dir.mktmpdir
-    basename    = File.basename(@gemfile, '.gem')
-    @target_dir = File.join(tmpdir, basename)
-
-    # Unpack
-    info "Unpacking gem '#{basename}' in " + @target_dir
-    package.extract_files @target_dir
+    extract_gem
 
     # Apply all patches
     patches.each do |patch|
@@ -32,33 +27,13 @@ class Gem::Patcher
       apply_patch(patch, strip_number)
     end
 
-    # Files for gemspec, add new files and remove old ones
-    # https://github.com/rubygems/rubygems/blob/master/lib/rubygems/specification.rb#L294
-    @files = [] 
-
-    files_in_gem.each do |file|
-      @files << file unless /\.orig/.match(file)
-    end
-
-    # New gem file that will be generated
-    patched_gem = package.spec.file_name
-    patched_package = Gem::Package.new patched_gem
-
-    patched_package.spec = package.spec.clone
-    patched_package.spec.files = @files
-
-    #patched_package.spec.rubygems_version = '2.0.a'
-
-    # Change dir and build the patched gem
-    Dir.chdir @target_dir do
-      patched_package.build false
-    end
+    build_patched_gem
 
     # Move the newly generated gem to working directory
-    system("cd #{@output_dir};mv #{File.join @target_dir, patched_gem} patched-#{patched_gem}")
+    system("cd #{@output_dir};mv #{File.join @target_dir, @package.spec.file_name} patched-#{@package.spec.file_name}")
 
     # Return the path to the patched gem
-    File.join @output_dir, "patched-#{patched_gem}"
+    File.join @output_dir, "patched-#{@package.spec.file_name}"
   end
 
   def apply_patch(patch, strip_number)
@@ -75,6 +50,26 @@ class Gem::Patcher
 
   private
 
+  def extract_gem
+    @package = Gem::Package.new @gemfile
+
+    # Unpack
+    info "Unpacking gem '#{@gemfile}' in " + @target_dir
+    @package.extract_files @target_dir
+  end
+
+  def build_patched_gem
+    patched_package = Gem::Package.new @package.spec.file_name
+    patched_package.spec = @package.spec.clone
+    patched_package.spec.files = files_in_gem
+    patched_package.spec.rubygems_version = '2.0.a'
+
+    # Change dir and build the patched gem
+    Dir.chdir @target_dir do
+      patched_package.build false
+    end
+  end
+
   def info(msg)
     say msg if Gem.configuration.verbose
   end
@@ -90,7 +85,7 @@ class Gem::Patcher
       end
     end
 
-    files
+    delete_original_files(files)
   end
 
   def files_in_dir(dir)
@@ -105,5 +100,11 @@ class Gem::Patcher
     end
 
     files
+  end
+
+  def delete_original_files(files)
+    files.each do |file|
+      files.delete file if /\.orig/.match(file)
+    end
   end
 end
