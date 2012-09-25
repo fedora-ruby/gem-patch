@@ -30,10 +30,14 @@ class Gem::Patcher
     build_patched_gem
 
     # Move the newly generated gem to working directory
-    system("cd #{@output_dir};mv #{File.join @target_dir, @package.spec.file_name} patched-#{@package.spec.file_name}")
+    gem_file = IO.read(File.join @target_dir, @package.spec.file_name)
+
+    File.open(File.join(@output_dir, @package.spec.file_name), 'w') do |f|
+      f.write gem_file
+    end
 
     # Return the path to the patched gem
-    File.join @output_dir, "patched-#{@package.spec.file_name}"
+    File.join @output_dir, "#{@package.spec.file_name}"
   end
 
   def apply_patch(patch, strip_number)
@@ -41,11 +45,13 @@ class Gem::Patcher
     info 'Path to the patch to apply: ' + patch_path
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
-    if system("cd #{@target_dir};patch --verbose -p#{strip_number} < #{patch_path}")
+    Dir.chdir @target_dir do
+      if system("patch --verbose -p#{strip_number} < #{patch_path}")
         info 'Succesfully patched by ' + patch
       else
         info 'Error: Unable to patch with ' + patch
       end
+    end
   end
 
   private
@@ -62,7 +68,6 @@ class Gem::Patcher
     patched_package = Gem::Package.new @package.spec.file_name
     patched_package.spec = @package.spec.clone
     patched_package.spec.files = files_in_gem
-    patched_package.spec.rubygems_version = '2.0.a'
 
     # Change dir and build the patched gem
     Dir.chdir @target_dir do
