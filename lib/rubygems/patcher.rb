@@ -16,7 +16,7 @@ class Gem::Patcher
   end
 
   ##
-  # Patch the gem, move the new patched gem to working directory and return the path
+  # Patch the gem, move the new patched gem to the working directory and return the path
 
   def patch_with(patches, strip_number)
     extract_gem
@@ -29,7 +29,7 @@ class Gem::Patcher
 
     build_patched_gem
 
-    # Move the newly generated gem to working directory
+    # Move the newly generated gem to the working directory
     gem_file = IO.read(File.join @target_dir, @package.spec.file_name)
 
     File.open(File.join(@output_dir, @package.spec.file_name), 'w') do |f|
