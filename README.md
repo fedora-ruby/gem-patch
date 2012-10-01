@@ -15,4 +15,4 @@ Optionally with -pNUMBER or --strip=NUMBER option that sets the file name strip 
 
 ## Requirements
 
-This version is build for RubyGems 2.0.a, a branch for RubyGems 1.8 is also available.
+This version is build for both RubyGems 1.8  and RubyGems 2.0.
