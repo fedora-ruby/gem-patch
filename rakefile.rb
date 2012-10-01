@@ -7,8 +7,8 @@ gemspec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary     = "RubyGems plugin for patching gems."
   s.description = <<-EOF
-                    `gem-patch` is a RubyGems plugin that helpes to patch gems without manually opening and rebuilding them.
-                    It openes a given .gem file, extracts it, patches it with system "patch" command,
+                    `gem-patch` is a RubyGems plugin that helps to patch gems without manually opening and rebuilding them.
+                    It opens a given .gem file, extracts it, patches it with system `patch` command,
                     clones its spec, updates the file list and builds the patched gem.
                   EOF
   s.licenses = [""]
