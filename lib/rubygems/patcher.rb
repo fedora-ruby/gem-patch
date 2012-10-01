@@ -5,6 +5,10 @@ require "rubygems/package"
 class Gem::Patcher
   include Gem::UserInteraction
 
+  if Gem::VERSION < '2.0'
+    require "rubygems/package-1.8"
+  end
+
   class PatchCommandMissing < StandardError; end
 
   def initialize(gemfile, output_dir)
@@ -15,10 +19,6 @@ class Gem::Patcher
     tmpdir      = Dir.mktmpdir
     basename    = File.basename(gemfile, '.gem')
     @target_dir = File.join(tmpdir, basename)
-
-    if Gem::VERSION <= '2.0'
-      require "rubygems/package-1.8"
-    end
   end
 
   ##

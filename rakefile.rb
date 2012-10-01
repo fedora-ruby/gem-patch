@@ -16,8 +16,6 @@ gemspec = Gem::Specification.new do |s|
   s.email    = "jstribny@redhat.com"
   s.required_ruby_version     = ">= 1.8.7"
   s.required_rubygems_version = ">= 1.8.0"
-  #s.add_development_dependency 'rake', '~> 0.9.2.2'
-  #s.add_development_dependency 'minitest', '~> 3.2'
   s.files = FileList["README.md", "rakefile.rb",
                       "lib/**/*.rb", "test/**/test*.rb"]
 end
