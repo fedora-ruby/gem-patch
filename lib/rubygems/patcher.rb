@@ -15,6 +15,10 @@ class Gem::Patcher
     tmpdir      = Dir.mktmpdir
     basename    = File.basename(gemfile, '.gem')
     @target_dir = File.join(tmpdir, basename)
+
+    if Gem::VERSION <= '2.0'
+      require "rubygems/package-1.8"
+    end
   end
 
   ##

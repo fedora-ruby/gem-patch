@@ -8,6 +8,10 @@ class TestGemPatch < Gem::TestCase
     @gems_dir  = File.join @tempdir, 'gems'
     @lib_dir = File.join @tempdir, 'gems', 'lib'
     FileUtils.mkdir_p @lib_dir
+
+    if Gem::VERSION <= '2.0'
+      require "rubygems/package-1.8"
+    end
   end
 
   ##
