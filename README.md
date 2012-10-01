@@ -8,10 +8,10 @@ A RubyGems plugin that patches gems.
 
 ## Usage
 
-gem patch [options] name-version.gem PATCH [PATCH ...]
+`gem patch [options] name-version.gem PATCH [PATCH ...]`
 
-Optionally with -pNUMBER or --strip=NUMBER option that sets the file name strip count to NUMBER
-(same options as for 'patch' command on Linux machines).
+Optionally with `-pNUMBER` or `--strip=NUMBER` option that sets the file name strip count to NUMBER
+(same options as for `patch` command on Linux machines).
 
 ## Requirements
 
