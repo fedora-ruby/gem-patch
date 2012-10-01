@@ -5,6 +5,8 @@ require "rubygems/package"
 class Gem::Patcher
   include Gem::UserInteraction
 
+  class PatchCommandMissing < StandardError; end
+
   def initialize(gemfile, output_dir)
     @gemfile    = gemfile
     @output_dir = output_dir
@@ -19,6 +21,7 @@ class Gem::Patcher
   # Patch the gem, move the new patched gem to the working directory and return the path
 
   def patch_with(patches, strip_number)
+    check_patch_command_is_installed
     extract_gem
 
     # Apply all patches
@@ -110,6 +113,12 @@ class Gem::Patcher
   def delete_original_files(files)
     files.each do |file|
       files.delete file if /\.orig/.match(file)
+    end
+  end
+
+  def check_patch_command_is_installed
+    unless system("patch --version")
+      raise PatchCommandMissing, 'Calling `patch` command failed. Do you have it installed?'
     end
   end
 end

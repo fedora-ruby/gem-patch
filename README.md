@@ -4,7 +4,7 @@ A RubyGems plugin that patches gems.
 
 ## Description
 
-`gem-patch` is a RubyGems plugin that helpes to patch gems without manually opening and rebuilding them. It openes a given .gem file, extracts it, patches it with system "patch" command, clones its spec, updates the file list and builds the patched gem.
+`gem-patch` is a RubyGems plugin that helpes to patch gems without manually opening and rebuilding them. It openes a given .gem file, extracts it, patches it with system `patch` command, clones its spec, updates the file list and builds the patched gem.
 
 ## Usage
 

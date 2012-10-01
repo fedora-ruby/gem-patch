@@ -1,7 +1,6 @@
 require "rubygems/test_case"
 require "rubygems/patcher"
 
-
 class TestGemPatch < Gem::TestCase
   def setup
     super
