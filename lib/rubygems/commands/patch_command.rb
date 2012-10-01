@@ -12,10 +12,20 @@ class Gem::Commands::PatchCommand < Gem::Command
     end
   end
 
-  def arguments
-    # is alingment alright?
-    "GEMFILE            path to the gem file to patch
-     PATCH [PATCH ...]  list of patches to apply"
+   def arguments # :nodoc:
+    args = <<-EOF
+              GEMFILE path to the gem file to patch
+              PATCH [PATCH ...] list of patches to apply
+           EOF
+    return args.gsub(/^\s+/, '')
+  end
+
+  def description # :nodoc:
+    <<-EOF
+      `gem-patch` is a RubyGems plugin that helps to patch gems without manually opening and rebuilding them.
+      It opens a given .gem file, extracts it, patches it with system `patch` command,
+      clones its spec, updates the file list and builds the patched gem.
+    EOF
   end
 
   def usage
