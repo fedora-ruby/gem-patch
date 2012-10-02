@@ -13,6 +13,7 @@ module Gem::Package
   def self.extract_files dir
     @installer = Gem::Installer.new @gem
     @installer.unpack dir
+    @spec = @installer.spec
   end
 
   def self.build skip_validation=false
