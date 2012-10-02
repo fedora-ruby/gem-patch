@@ -20,7 +20,7 @@ gemspec = Gem::Specification.new do |s|
   #s.add_development_dependency 'rake', '~> 0.9.2.2'
   #s.add_development_dependency 'minitest', '~> 3.2'
   s.files = FileList["README.md", "rakefile.rb",
-                      "lib/**/*.rb", "test/**/test*.rb", ".gemtest"]
+                      "lib/**/*.rb", "test/**/test*.rb"]
 end
 
 Gem::PackageTask.new gemspec do |pkg|
