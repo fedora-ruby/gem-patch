@@ -83,7 +83,7 @@ class Gem::Patcher
   end
 
   def info(msg)
-    say msg if Gem.configuration.verbose
+    say msg if Gem.configuration.really_verbose
   end
 
   def files_in_gem
