@@ -53,10 +53,20 @@ class Gem::Patcher
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      if system("patch --verbose -p#{strip_number} < #{patch_path}")
-        info 'Succesfully patched by ' + patch
-      else
-        info 'Error: Unable to patch with ' + patch
+      IO.popen("patch --verbose -p#{strip_number} < #{patch_path} 2>&1") do |out|
+        std = out.readlines
+
+        unless $?.nil?
+          if $?.exitstatus == 0
+            puts "Succesfully patched with #{patch}"
+          else
+            puts "Error: Unable to patch with #{patch}."
+
+            unless Gem.configuration.really_verbose
+              puts "Run gem patch with --verbose option to swich to verbose mode."
+            end
+          end
+        end
       end
     end
   end
@@ -121,9 +131,9 @@ class Gem::Patcher
   end
 
   def check_patch_command_is_installed
-    output = `patch --version 2>&1`
+    result = IO.popen('patch --version') 
     
-    unless /^patch\s\d\.\d\./.match output
+    unless /^patch\s\d\.\d\./.match result.readlines[0]
       raise PatchCommandMissing, 'Calling `patch` command failed. Do you have it installed?'
     end
   end
