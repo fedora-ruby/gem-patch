@@ -49,6 +49,7 @@ class Gem::Commands::PatchCommand < Gem::Command
     end
 
     patcher = Gem::Patcher.new(gemfile, options[:output])
-    patcher.patch_with(patches, options[:strip]) 
+    patcher.patch_with(patches, options[:strip])
+    patcher.print_results 
   end
 end
