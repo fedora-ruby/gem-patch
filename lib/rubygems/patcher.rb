@@ -117,7 +117,9 @@ class Gem::Patcher
   end
 
   def check_patch_command_is_installed
-    unless system("patch --version")
+    result = IO.popen('patch --version') 
+    
+    unless /^patch\s\d\.\d\./.match result.readlines[0]
       raise PatchCommandMissing, 'Calling `patch` command failed. Do you have it installed?'
     end
   end
