@@ -50,6 +50,7 @@ class Gem::Patcher
     Dir.chdir @target_dir do
       IO.popen("patch --verbose -p#{strip_number} < #{patch_path} 2>&1") do |out|
         std = out.readlines
+        out.close
         info std
 
         unless $?.nil?
