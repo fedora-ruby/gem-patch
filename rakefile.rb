@@ -12,12 +12,13 @@ gemspec = Gem::Specification.new do |s|
                     It opens a given .gem file, extracts it, patches it with system `patch` command,
                     clones its spec, updates the file list and builds the patched gem.
                   EOF
+  s.homepage = "http://github.com/strzibny/gem-patch"
   s.licenses = ["MIT"]
   s.author   = "Josef Stribny"
   s.email    = "jstribny@redhat.com"
   s.required_ruby_version     = ">= 1.8.7"
   s.required_rubygems_version = ">= 1.8.0"
-  s.files = FileList["README.md", "README.rdoc", "rakefile.rb",
+  s.files = FileList["README.md", "README.rdoc", "LICENCE", "rakefile.rb",
                       "lib/**/*.rb", "test/**/test*.rb"]
 end
 
