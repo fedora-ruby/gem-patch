@@ -1,7 +1,6 @@
 require 'rubygems/package_task'
 require 'rake/testtask' 
 require 'rdoc/task'
-require 'jeweler'
 
 gemspec = Gem::Specification.new do |s|
   s.name     = "gem-patch"
@@ -13,19 +12,18 @@ gemspec = Gem::Specification.new do |s|
                     It opens a given .gem file, extracts it, patches it with system `patch` command,
                     clones its spec, updates the file list and builds the patched gem.
                   EOF
+  s.homepage = "http://github.com/strzibny/gem-patch"
   s.licenses = ["MIT"]
   s.author   = "Josef Stribny"
   s.email    = "jstribny@redhat.com"
   s.required_ruby_version     = ">= 1.8.7"
   s.required_rubygems_version = ">= 2.0.a"
-  s.files = FileList["README.md", "rakefile.rb",
+  s.files = FileList["README.md", "README.rdoc", "LICENCE", "rakefile.rb",
                       "lib/**/*.rb", "test/**/test*.rb"]
 end
 
 Gem::PackageTask.new gemspec do |pkg|
 end
-
-Jeweler::GemcutterTasks.new
 
 Rake::RDocTask.new do |rd|
   rd.main = "README.rdoc"
