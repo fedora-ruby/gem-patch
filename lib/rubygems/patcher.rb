@@ -21,6 +21,8 @@ class Gem::Patcher
   # Patch the gem, move the new patched gem to the working directory and return the path
 
   def patch_with(patches, strip_number)
+    @output = []
+    
     check_patch_command_is_installed
     extract_gem
 
@@ -33,11 +35,8 @@ class Gem::Patcher
     build_patched_gem
 
     # Move the newly generated gem to the working directory
-    gem_file = IO.read(File.join @target_dir, @package.spec.file_name)
-
-    File.open(File.join(@output_dir, @package.spec.file_name), 'w') do |f|
-      f.write gem_file
-    end
+    new_gem_path = File.join(@output_dir, @package.spec.file_name)
+    FileUtils.mv((File.join @target_dir, @package.spec.file_name), new_gem_path)
 
     # Return the path to the patched gem
     File.join @output_dir, "#{@package.spec.file_name}"
@@ -49,11 +48,28 @@ class Gem::Patcher
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      if system("patch --verbose -p#{strip_number} < #{patch_path}")
-        info 'Succesfully patched by ' + patch
-      else
-        info 'Error: Unable to patch with ' + patch
+      IO.popen("patch --verbose -p#{strip_number} < #{patch_path} 2>&1") do |out|
+        std = out.readlines
+        info std
+
+        unless $?.nil?
+          if $?.exitstatus == 0
+            @output << "Succesfully patched with #{patch}"
+          else
+            @output << "Error: Unable to patch with #{patch}."
+
+            unless Gem.configuration.really_verbose
+              @output << "Run gem patch with --verbose option to swich to verbose mode."
+            end
+          end
+        end
       end
+    end
+  end
+
+  def print_results
+    @output.each do |msg|
+      say msg 
     end
   end
 
