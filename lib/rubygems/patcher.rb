@@ -38,15 +38,11 @@ class Gem::Patcher
 
     build_patched_gem
 
-    # Move the newly generated gem to the working directory
-    gem_file = IO.read(File.join @target_dir, @package.spec.file_name)
-
-    File.open(File.join(@output_dir, @package.spec.file_name), 'w') do |f|
-      f.write gem_file
-    end
+    new_gem_path = File.join(@output_dir, @package.spec.file_name)
+    FileUtils.mv((File.join @target_dir, @package.spec.file_name), new_gem_path)
 
     # Return the path to the patched gem
-    File.join @output_dir, "#{@package.spec.file_name}"
+    new_gem_path
   end
 
   def apply_patch(patch, strip_number)
