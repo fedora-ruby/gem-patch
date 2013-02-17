@@ -18,7 +18,7 @@ gemspec = Gem::Specification.new do |s|
   s.email    = "jstribny@redhat.com"
   s.required_ruby_version     = ">= 1.8.7"
   s.required_rubygems_version = ">= 1.8.0"
-  s.files = FileList["README.md", "README.rdoc", "LICENCE", "rakefile.rb",
+  s.files = FileList["README.md", "LICENCE", "rakefile.rb",
                       "lib/**/*.rb", "test/**/test*.rb"]
 end
 
@@ -26,8 +26,8 @@ Gem::PackageTask.new gemspec do |pkg|
 end
 
 Rake::RDocTask.new do |rd|
-  rd.main = "README.rdoc"
-  rd.rdoc_files.include("README.rdoc", "lib/**/*.rb")
+  rd.main = "README.md"
+  rd.rdoc_files.include("README.md", "lib/**/*.rb")
 end
 
 Rake::TestTask.new('test') do |t|
