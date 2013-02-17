@@ -8,6 +8,55 @@ class TestGemPatch < Gem::TestCase
     @gems_dir  = File.join @tempdir, 'gems'
     @lib_dir = File.join @tempdir, 'gems', 'lib'
     FileUtils.mkdir_p @lib_dir
+    
+    # Defaults
+    @options         = {}
+    @options[:strip] = 1
+    @options[:fuzz]  = 2
+  end
+  
+  ##
+  # Test changing a file in a gem with -F0 option
+
+  def test_should_not_patch_without_fuzz
+    @options[:fuzz] = 0
+    
+    gemfile = bake_testing_gem
+
+    patches = []
+    patches << bake_change_file_with_fuzz_patch
+
+    # Creates new patched gem in @gems_dir
+    patcher = Gem::Patcher.new(gemfile, @gems_dir)
+    patched_gem = patcher.patch_with(patches, @options)
+
+    # Unpack
+    package = Gem::Package.new patched_gem
+    package.extract_files @gems_dir
+
+    assert_equal (patched_file == file_contents('foo.rb')), false
+  end
+  
+  ##
+  # Test changing a file in a gem with -F2 option
+
+  def test_change_file_with_fuzz_patch
+    @options[:fuzz] = 2
+    
+    gemfile = bake_testing_gem
+
+    patches = []
+    patches << bake_change_file_with_fuzz_patch
+
+    # Creates new patched gem in @gems_dir
+    patcher = Gem::Patcher.new(gemfile, @gems_dir)
+    patched_gem = patcher.patch_with(patches, @options)
+
+    # Unpack
+    package = Gem::Package.new patched_gem
+    package.extract_files @gems_dir
+
+    assert_equal patched_file, file_contents('foo.rb')
   end
 
   ##
@@ -21,7 +70,7 @@ class TestGemPatch < Gem::TestCase
 
     # Creates new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
-    patched_gem = patcher.patch_with(patches, 1)
+    patched_gem = patcher.patch_with(patches, @options)
 
     # Unpack
     package = Gem::Package.new patched_gem
@@ -34,14 +83,16 @@ class TestGemPatch < Gem::TestCase
   # Test adding a file into a gem with -p0 option
 
   def test_new_file_patch
+    @options[:strip] = 0
+    
     gemfile = bake_testing_gem
 
     patches = []
     patches << bake_new_file_patch
 
-    # Create a new patched gem in @gems_fir
+    # Create a new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
-    patched_gem = patcher.patch_with(patches, 0)
+    patched_gem = patcher.patch_with(patches, @options)
 
     # Unpack
     package = Gem::Package.new patched_gem
@@ -54,15 +105,17 @@ class TestGemPatch < Gem::TestCase
   # Test adding and deleting a file in a gem with -p0 option
 
   def test_delete_file_patch
+    @options[:strip] = 0
+    
     gemfile = bake_testing_gem
 
     patches = []
     patches << bake_new_file_patch
     patches << bake_delete_file_patch
 
-    # Create a new patched gem in @gems_fir
+    # Create a new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
-    patched_gem = patcher.patch_with(patches, 0)
+    patched_gem = patcher.patch_with(patches, @options)
 
     # Unpack
     package = Gem::Package.new patched_gem
@@ -83,9 +136,9 @@ class TestGemPatch < Gem::TestCase
     patches = []
     patches << bake_incorrect_patch
 
-    # Create a new patched gem in @gems_fir
+    # Create a new patched gem in @gems_dir
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
-    patched_gem = patcher.patch_with(patches, 0)
+    patched_gem = patcher.patch_with(patches, @options)
 
     # Unpack
     package = Gem::Package.new patched_gem
@@ -97,6 +150,16 @@ class TestGemPatch < Gem::TestCase
 
   def bake_change_file_patch
     patch_path = File.join(@gems_dir, 'change_file.patch')
+
+    File.open(patch_path, 'w') do |f|
+      f.write change_file_patch
+    end
+
+    patch_path
+  end
+  
+  def bake_change_file_with_fuzz_patch
+    patch_path = File.join(@gems_dir, 'change_file_with_fuzz.patch')
 
     File.open(patch_path, 'w') do |f|
       f.write change_file_patch
@@ -231,6 +294,24 @@ class TestGemPatch < Gem::TestCase
       +++ b/lib/foo.rb
       @@ -1,6 +1,8 @@
              module Foo
+      -        def bar
+      -          'Original'
+      +        class Bar
+      +          def foo_bar
+      +            'Patched'
+      +          end
+               end
+            end
+    EOF
+  end
+  
+  def change_file_with_fuzz_patch
+    <<-EOF
+      diff -u a/lib/foo.rb b/lib/foo.rb
+      --- a/lib/foo.rb 
+      +++ b/lib/foo.rb
+      @@ -1,6 +1,8 @@
+             module FooBar
       -        def bar
       -          'Original'
       +        class Bar

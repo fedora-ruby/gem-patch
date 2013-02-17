@@ -24,7 +24,7 @@ class Gem::Patcher
   ##
   # Patch the gem, move the new patched gem to the working directory and return the path
 
-  def patch_with(patches, strip_number)
+  def patch_with(patches, options)
     @output = []
 
     check_patch_command_is_installed
@@ -33,7 +33,7 @@ class Gem::Patcher
     # Apply all patches
     patches.each do |patch|
       info 'Applying patch ' + patch
-      apply_patch(patch, strip_number)
+      apply_patch(patch, options)
     end
 
     build_patched_gem
@@ -45,13 +45,16 @@ class Gem::Patcher
     new_gem_path
   end
 
-  def apply_patch(patch, strip_number)
+  def apply_patch(patch, options)
+    options[:strip] ||= 1
+    options[:fuzz]  ||= 2
+    
     patch_path = File.expand_path(patch)
     info 'Path to the patch to apply: ' + patch_path
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      IO.popen("patch --verbose -p#{strip_number} < #{patch_path} 2>&1") do |out|
+      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} < #{patch_path} 2>&1") do |out|
         std = out.readlines
         out.close
         info std

@@ -10,6 +10,11 @@ class Gem::Commands::PatchCommand < Gem::Command
     add_option('-pNUMBER', '--strip=NUMBER', 'Set the file name strip count to NUMBER.') do |number, options|
       options[:strip] = number
     end
+    
+    # Number of lines to ignore in looking for places to install a hunk
+    add_option('-FNUMBER', '--fuzz=NUMBER', 'Set NUMBER of lines to ignore in looking for places to install a hunk.') do |number, options|
+      options[:fuzz] = number
+    end
   end
 
   def arguments # :nodoc:
@@ -23,7 +28,7 @@ class Gem::Commands::PatchCommand < Gem::Command
   def description # :nodoc:
     desc = <<-EOF
            `gem-patch` is a RubyGems plugin that helps to patch gems without manually opening and rebuilding them.
-           It opens a given .gem file, extracts it, patches it with system "patch" command,
+           It opens a given .gem file, extracts it, patches it with system `patch` command,
            clones its spec, updates the file list and builds the patched gem.
     EOF
     return desc.gsub(/^\s+/, '')
@@ -50,7 +55,7 @@ class Gem::Commands::PatchCommand < Gem::Command
     end
 
     patcher = Gem::Patcher.new(gemfile, options[:output])
-    patcher.patch_with(patches, options[:strip]) 
+    patcher.patch_with(patches, options) 
     patcher.print_results
   end
 end
