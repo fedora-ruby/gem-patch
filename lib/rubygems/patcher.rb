@@ -48,13 +48,14 @@ class Gem::Patcher
   def apply_patch(patch, options)
     options[:strip] ||= 1
     options[:fuzz]  ||= 2
+    dry_run = '--dry-run' if options[:dry_run]
     
     patch_path = File.expand_path(patch)
     info 'Path to the patch to apply: ' + patch_path
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} < #{patch_path} 2>&1") do |out|
+      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} #{dry_run} < #{patch_path} 2>&1") do |out|
         std = out.readlines
         out.close
         info std

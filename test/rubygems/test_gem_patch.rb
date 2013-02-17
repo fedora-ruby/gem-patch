@@ -16,6 +16,29 @@ class TestGemPatch < Gem::TestCase
   end
   
   ##
+  # Test dry run is not supposed to change anything
+
+  def test_dry_run
+    @options[:dry_run] = true
+    
+    gemfile = bake_testing_gem
+
+    patches = []
+    patches << bake_change_file_patch
+
+    # Creates new patched gem in @gems_dir
+    patcher = Gem::Patcher.new(gemfile, @gems_dir)
+    patched_gem = patcher.patch_with(patches, @options)
+
+    # Unpack
+    package = Gem::Package.new patched_gem
+    package.extract_files @gems_dir
+
+    # Still the same
+    assert_equal original_file, file_contents('foo.rb')
+  end
+  
+  ##
   # Test using outfile for output
 
   def test_use_outfile_for_output

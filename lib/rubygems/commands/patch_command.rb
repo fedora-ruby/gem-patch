@@ -20,6 +20,11 @@ class Gem::Commands::PatchCommand < Gem::Command
     add_option('-oFILE', '--output=FILE', 'Set output FILE.') do |file, options|
       options[:outfile] = file
     end
+    
+    # Dry run only shows expected output from the patching process
+    add_option('--dry-run', 'Print the results from patching, but do not change any files.') do |file, options|
+      options[:dry_run] = true
+    end
   end
 
   def arguments # :nodoc:
