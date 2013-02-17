@@ -38,11 +38,11 @@ class Gem::Patcher
 
     build_patched_gem
 
-    new_gem_path = File.join(@output_dir, @package.spec.file_name)
-    FileUtils.mv((File.join @target_dir, @package.spec.file_name), new_gem_path)
+    options[:outfile] ||= File.join(@output_dir, @package.spec.file_name)
+    FileUtils.mv((File.join @target_dir, @package.spec.file_name), options[:outfile])
 
     # Return the path to the patched gem
-    new_gem_path
+    options[:outfile]
   end
 
   def apply_patch(patch, options)

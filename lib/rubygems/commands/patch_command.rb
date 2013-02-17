@@ -15,6 +15,11 @@ class Gem::Commands::PatchCommand < Gem::Command
     add_option('-FNUMBER', '--fuzz=NUMBER', 'Set NUMBER of lines to ignore in looking for places to install a hunk.') do |number, options|
       options[:fuzz] = number
     end
+    
+    # Set output file to FILE instead of overwritting
+    add_option('-oFILE', '--output=FILE', 'Set output FILE.') do |file, options|
+      options[:outfile] = file
+    end
   end
 
   def arguments # :nodoc:
