@@ -28,7 +28,7 @@ On Fedora you can use YUM:
 | -FNUMBER | --fuzz=NUMBER | Set NUMBER of lines to ignore in looking for places to install a hunk. |
 | -oFILE | --output=FILE | Set output FILE. |
 | --dry-run | | Print the results from patching, but do not change any files. |
-| --verbose | --output=FILE | Print additional info and STDOUT from `patch` command. |
+| --verbose | | Print additional info and STDOUT from `patch` command. |
 
 ## Requirements
 
@@ -36,4 +36,4 @@ This version is build for both RubyGems 1.8  and RubyGems 2.0.
 
 ## Copyright
 
-See LICENCE. Feel free to contribute!
+Released under the MIT license. Feel free to contribute!
