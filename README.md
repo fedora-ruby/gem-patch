@@ -30,6 +30,8 @@ On Fedora you can use YUM:
 | --dry-run | | Print the results from patching, but do not change any files. |
 | --verbose | | Print additional info and STDOUT from `patch` command. |
 
+For versions higher than 0.1.4 `--dry-run` switch behaviour has been changed and it's not the same as in original `patch` command. Instead, `gem-patch` lets `patch` command modify files, but doesn't override the gem to be patched nor the output file at the end. This way we can easily use dry run also for patches involving more diffs changing each other.
+
 ## Requirements
 
 This version is build for both RubyGems 1.8  and RubyGems 2.0.
