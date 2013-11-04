@@ -81,6 +81,11 @@ class Gem::Patcher
     end
   end
 
+  # Return output lines
+  def output
+    @output
+  end
+
   private
 
   def extract_gem
