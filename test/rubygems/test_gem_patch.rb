@@ -122,7 +122,7 @@ class TestGemPatch < Gem::TestCase
     package = Gem::Package.new patched_gem
     package.extract_files @gems_dir
 
-    assert_equal patched_file, file_contents('foo.rb')
+    assert_equal patched_file_with_fuzz, file_contents('foo.rb')
   end
 
   ##
@@ -238,7 +238,7 @@ class TestGemPatch < Gem::TestCase
     patch_path = File.join(@gems_dir, 'change_file_with_fuzz.patch')
 
     File.open(patch_path, 'w') do |f|
-      f.write change_file_patch
+      f.write change_file_with_fuzz_patch
     end
 
     patch_path
@@ -363,6 +363,16 @@ class TestGemPatch < Gem::TestCase
     EOF
   end
 
+  def patched_file_with_fuzz
+    <<-EOF
+      module Foo
+        def bar
+          'Patched'
+        end
+      end
+    EOF
+  end
+
   def change_file_patch
     <<-EOF
       diff -u a/lib/foo.rb b/lib/foo.rb
@@ -420,16 +430,13 @@ class TestGemPatch < Gem::TestCase
       diff -u a/lib/foo.rb b/lib/foo.rb
       --- a/lib/foo.rb 
       +++ b/lib/foo.rb
-      @@ -1,6 +1,8 @@
-             module FooBar
-      -        def bar
+      @@ -100,5 +100,5 @@
+             module Foo
+               def bar_bar
       -          'Original'
-      +        class Bar
-      +          def foo_bar
-      +            'Patched'
-      +          end
+      +          'Patched'
                end
-            end
+             end
     EOF
   end
 
