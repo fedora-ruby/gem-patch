@@ -20,7 +20,7 @@ class TestGemPatch < Gem::TestCase
 
   def test_dry_run
     @options[:dry_run] = true
-    
+
     gemfile = bake_testing_gem
 
     patches = []
@@ -36,6 +36,25 @@ class TestGemPatch < Gem::TestCase
 
     # Still the same
     assert_equal original_file, file_contents('foo.rb')
+  end
+
+  ##
+  # Test dry run should allow modification of the same file
+  # unlike original --dry-run switch in system patch command
+
+  def test_dry_run
+    @options[:dry_run] = true
+
+    gemfile = bake_testing_gem
+
+    patches = []
+    patches << bake_change_same_file_patch
+
+    # Creates new patched gem in @gems_dir
+    patcher = Gem::Patcher.new(gemfile, @gems_dir)
+    patched_gem = patcher.patch_with(patches, @options)
+
+    assert_equal /^Succesfully patched with.*/, patcher.output.join(' ')
   end
   
   ##
@@ -204,6 +223,16 @@ class TestGemPatch < Gem::TestCase
 
     patch_path
   end
+
+  def bake_change_same_file_patch
+    patch_path = File.join(@gems_dir, 'change_same_file.patch')
+
+    File.open(patch_path, 'w') do |f|
+      f.write change_same_file_patch
+    end
+
+    patch_path
+  end
   
   def bake_change_file_with_fuzz_patch
     patch_path = File.join(@gems_dir, 'change_file_with_fuzz.patch')
@@ -345,6 +374,39 @@ class TestGemPatch < Gem::TestCase
       -          'Original'
       +        class Bar
       +          def foo_bar
+      +            'Patched'
+      +          end
+               end
+            end
+    EOF
+  end
+
+  def change_same_file_patch
+    <<-EOF
+      diff -u a/lib/foo.rb b/lib/foo.rb
+      --- a/lib/foo.rb
+      +++ b/lib/foo.rb
+      @@ -1,6 +1,8 @@
+             module Foo
+      -        def bar
+      -          'Original'
+      +        class Bar
+      +          def foo_bar
+      +            'Patched'
+      +          end
+               end
+            end
+      diff -u a/lib/foo.rb b/lib/foo.rb
+      --- a/lib/foo.rb
+      +++ b/lib/foo.rb
+      @@ -1,8 +1,8 @@
+             module Foo
+      -        class Bar
+      -          def foo_bar
+      -            'Patched'
+      -          end
+      +        class NewBar
+      +          def new_foo_bar
       +            'Patched'
       +          end
                end
