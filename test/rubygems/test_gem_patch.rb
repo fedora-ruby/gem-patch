@@ -396,6 +396,7 @@ class TestGemPatch < Gem::TestCase
       +          end
                end
             end
+
       diff -u a/lib/foo.rb b/lib/foo.rb
       --- a/lib/foo.rb
       +++ b/lib/foo.rb

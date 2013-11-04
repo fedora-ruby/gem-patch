@@ -39,7 +39,7 @@ class Gem::Patcher
     build_patched_gem
 
     options[:outfile] ||= File.join(@output_dir, @package.spec.file_name)
-    FileUtils.mv((File.join @target_dir, @package.spec.file_name), options[:outfile])
+    FileUtils.mv((File.join @target_dir, @package.spec.file_name), options[:outfile]) unless options[:dry_run]
 
     # Return the path to the patched gem
     options[:outfile]
@@ -48,14 +48,13 @@ class Gem::Patcher
   def apply_patch(patch, options)
     options[:strip] ||= 1
     options[:fuzz]  ||= 2
-    dry_run = '--dry-run' if options[:dry_run]
     
     patch_path = File.expand_path(patch)
     info 'Path to the patch to apply: ' + patch_path
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} #{dry_run} < #{patch_path} 2>&1") do |out|
+      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} < #{patch_path} 2>&1") do |out|
         std = out.readlines
         out.close
         info std
