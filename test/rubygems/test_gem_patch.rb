@@ -54,7 +54,7 @@ class TestGemPatch < Gem::TestCase
     patcher = Gem::Patcher.new(gemfile, @gems_dir)
     patched_gem = patcher.patch_with(patches, @options)
 
-    assert_equal /^Succesfully patched with.*/, patcher.output.join(' ')
+    assert_equal 0, /\ASuccesfully patched with.*/ =~ patcher.output.join(' ')
   end
   
   ##
