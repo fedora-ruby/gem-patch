@@ -3,26 +3,26 @@ require "rubygems/patcher"
 
 class Gem::Commands::PatchCommand < Gem::Command
   def initialize
-    super "patch", "Patch the gem with the given patches and generate the patched gem.",
+    super "patch", "Patch the gem with the given patches and generate the patched gem",
       :output => Dir.pwd, :strip => 0
 
     # Same as 'patch -pNUMBER' on Linux machines
-    add_option('-pNUMBER', '--strip=NUMBER', 'Set the file name strip count to NUMBER.') do |number, options|
+    add_option('-pNUMBER', '--strip=NUMBER', 'Set the file name strip count to NUMBER') do |number, options|
       options[:strip] = number
     end
     
     # Number of lines to ignore in looking for places to install a hunk
-    add_option('-FNUMBER', '--fuzz=NUMBER', 'Set NUMBER of lines to ignore in looking for places to install a hunk.') do |number, options|
+    add_option('-FNUMBER', '--fuzz=NUMBER', 'Set NUMBER of lines to ignore in looking for places to install a hunk') do |number, options|
       options[:fuzz] = number
     end
     
     # Set output file to FILE instead of overwritting
-    add_option('-oFILE', '--output=FILE', 'Set output FILE.') do |file, options|
+    add_option('-oFILE', '--output=FILE', 'Set output FILE') do |file, options|
       options[:outfile] = file
     end
     
     # Dry run only shows expected output from the patching process
-    add_option('--dry-run', 'Print the results from patching, but do not change any files.') do |file, options|
+    add_option('--dry-run', 'Print the results from patching, but do not change any files') do |file, options|
       options[:dry_run] = true
     end
   end
