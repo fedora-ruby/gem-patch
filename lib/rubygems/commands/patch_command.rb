@@ -15,6 +15,11 @@ class Gem::Commands::PatchCommand < Gem::Command
     add_option('-FNUMBER', '--fuzz=NUMBER', 'Set NUMBER of lines to ignore in looking for places to install a hunk') do |number, options|
       options[:fuzz] = number
     end
+
+    # Pass other options that are not directly implemented
+    add_option('--patch-options=OPTIONS', 'Pass additional OPTIONS to the patch command') do |opts, options|
+      options[:patch_options] = opts
+    end
     
     # Set output file to FILE instead of overwritting
     add_option('-oFILE', '--output=FILE', 'Set output FILE') do |file, options|

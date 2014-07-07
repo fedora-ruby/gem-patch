@@ -54,7 +54,8 @@ class Gem::Patcher
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
-      IO.popen("patch --verbose -p#{options[:strip]} --fuzz=#{options[:fuzz]} < #{patch_path} 2>&1") do |out|
+      opts = ["--verbose",  "-p#{options[:strip]}", "--fuzz=#{options[:fuzz]}", "#{options[:patch_options]}"]
+      IO.popen("patch #{opts.join(' ')} < #{patch_path} 2>&1") do |out|
         std = out.readlines
         out.close
         info std
