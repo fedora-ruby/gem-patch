@@ -82,6 +82,25 @@ class TestGemPatch < Gem::TestCase
   end
   
   ##
+  # Test passing additional options
+
+  def test_use_outfile_for_output
+    @options[:patch_options] = '--help'
+    
+    gemfile = bake_testing_gem
+
+    patches = []
+    patches << bake_change_file_patch
+
+    # Creates new patched gem in @gems_dir
+    patcher = Gem::Patcher.new(gemfile, @gems_dir)
+    patched_gem = patcher.patch_with(patches, @options)
+
+    assert_equal 0, /.*Usage: patch \[OPTION\].*/ =~ patcher.std.join(' ')
+  end
+
+  
+  ##
   # Test changing a file in a gem with -F0 option
 
   def test_should_not_patch_without_fuzz

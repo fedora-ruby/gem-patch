@@ -25,7 +25,7 @@ class Gem::Patcher
   # Patch the gem, move the new patched gem to the working directory and return the path
 
   def patch_with(patches, options)
-    @output = []
+    @std, @output = [], []
 
     check_patch_command_is_installed
     extract_gem
@@ -33,7 +33,7 @@ class Gem::Patcher
     # Apply all patches
     patches.each do |patch|
       info 'Applying patch ' + patch
-      apply_patch(patch, options)
+      @std << apply_patch(patch, options)
     end
 
     build_patched_gem
@@ -71,6 +71,7 @@ class Gem::Patcher
             end
           end
         end
+	std
       end
     end
   end
@@ -81,9 +82,18 @@ class Gem::Patcher
     end
   end
 
+  ##
   # Return output lines
+
   def output
     @output
+  end
+
+  ##
+  # Return std from patch command
+
+  def std
+    @std
   end
 
   private
