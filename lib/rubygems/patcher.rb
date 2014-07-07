@@ -2,6 +2,10 @@ require 'rbconfig'
 require 'tmpdir'
 require 'rubygems/package'
 
+##
+# Gem::Patcher is used to patch .gem files
+# by calling system patch command
+
 class Gem::Patcher
   include Gem::UserInteraction
 
@@ -22,7 +26,8 @@ class Gem::Patcher
   end
 
   ##
-  # Patch the gem, move the new patched gem to the working directory and return the path
+  # Patch the gem, move the new patched gem
+  # to +options[:outfile]+ and return the path
 
   def patch_with(patches, options)
     @std, @output = [], []
@@ -44,6 +49,13 @@ class Gem::Patcher
     # Return the path to the patched gem
     options[:outfile]
   end
+
+  ##
+  # Apply one +patch+ at a time using +options+
+  #
+  # Default options:
+  #  options[:strip] = 1
+  #  options[:fuzz]  = 2
 
   def apply_patch(patch, options)
     options[:strip] ||= 1
@@ -76,6 +88,10 @@ class Gem::Patcher
     end
   end
 
+  ##
+  # Print results from patching if
+  # Gem.configuration.really_verbose
+
   def print_results
     @output.each do |msg|
       say msg 
@@ -90,7 +106,8 @@ class Gem::Patcher
   end
 
   ##
-  # Return std from patch command
+  # Return standard output
+  # from patch command
 
   def std
     @std
@@ -159,7 +176,8 @@ class Gem::Patcher
     begin 
       IO.popen('patch --version') 
     rescue Exception
-      raise PatchCommandMissing, 'Calling `patch` command failed. Do you have it installed?'
+      raise PatchCommandMissing, \
+        'Calling `patch` command failed. Do you have it installed?'
     end
   end
 end
