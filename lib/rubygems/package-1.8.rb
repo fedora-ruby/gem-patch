@@ -1,5 +1,5 @@
-require "rubygems/installer"
-require "rubygems/builder"
+require 'rubygems/installer'
+require 'rubygems/builder'
 
 ##
 # Simulate RubyGems 2.0 behavior to use master branch of gem-patch plugin with RubyGems 1.8

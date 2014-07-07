@@ -1,5 +1,5 @@
-require "rubygems/test_case"
-require "rubygems/patcher"
+require 'rubygems/test_case'
+require 'rubygems/patcher'
 
 class TestGemPatch < Gem::TestCase
   def setup

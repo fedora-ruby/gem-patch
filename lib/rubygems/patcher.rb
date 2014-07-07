@@ -1,12 +1,12 @@
-require "rbconfig"
-require "tmpdir"
-require "rubygems/package"
+require 'rbconfig'
+require 'tmpdir'
+require 'rubygems/package'
 
 class Gem::Patcher
   include Gem::UserInteraction
 
   if Gem::VERSION < '2.0'
-    require "rubygems/package-1.8"
+    require 'rubygems/package-1.8'
   end
 
   class PatchCommandMissing < StandardError; end
@@ -67,7 +67,7 @@ class Gem::Patcher
             @output << "Error: Unable to patch with #{patch}."
 
             unless Gem.configuration.really_verbose
-              @output << "Run gem patch with --verbose option to swich to verbose mode."
+              @output << 'Run gem patch with --verbose option to swich to verbose mode.'
             end
           end
         end

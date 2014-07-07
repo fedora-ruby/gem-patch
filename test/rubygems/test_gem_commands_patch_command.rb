@@ -1,5 +1,5 @@
-require "rubygems/test_case"
-require "rubygems/commands/patch_command"
+require 'rubygems/test_case'
+require 'rubygems/commands/patch_command'
 
 class TestGemCommandsPatchCommand < Gem::TestCase
   def setup

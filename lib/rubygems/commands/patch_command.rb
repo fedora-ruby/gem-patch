@@ -1,9 +1,9 @@
-require "rubygems/command"
-require "rubygems/patcher"
+require 'rubygems/command'
+require 'rubygems/patcher'
 
 class Gem::Commands::PatchCommand < Gem::Command
   def initialize
-    super "patch", "Patch the gem with the given patches and generate the patched gem",
+    super 'patch', 'Patch the gem with the given patches and generate the patched gem',
       :output => Dir.pwd, :strip => 0
 
     # Same as 'patch -pNUMBER' on Linux machines
@@ -60,13 +60,13 @@ class Gem::Commands::PatchCommand < Gem::Command
     # No gem
     unless gemfile
       raise Gem::CommandLineError,
-        "Please specify a gem file on the command line (e.g. gem patch foo-0.1.0.gem PATCH [PATCH ...])"
+        'Please specify a gem file on the command line (e.g. gem patch foo-0.1.0.gem PATCH [PATCH ...])'
     end
 
     # No patches
     if patches.empty?
       raise Gem::CommandLineError,
-        "Please specify patches to apply (e.g. gem patch foo-0.1.0.gem foo.patch bar.patch ...)"
+        'Please specify patches to apply (e.g. gem patch foo-0.1.0.gem foo.patch bar.patch ...)'
     end
 
     patcher = Gem::Patcher.new(gemfile, options[:output])
