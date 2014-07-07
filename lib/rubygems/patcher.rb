@@ -42,7 +42,8 @@ class Gem::Patcher
       @std << apply_patch(patch, options)
     end
     remove(options[:remove], @target_dir) if options[:remove]
-    build_patched_gem
+    # Rebuild only if there weren't any problems
+    build_patched_gem unless failed?
 
     options[:outfile] ||= File.join(@output_dir, @package.spec.file_name)
     FileUtils.mv((File.join @target_dir, @package.spec.file_name), options[:outfile]) unless options[:dry_run]
@@ -113,6 +114,13 @@ class Gem::Patcher
 
   def std
     @std
+  end
+
+  ##
+  # Return false if any of the pathes failed
+
+  def failed?
+    @std.join(' ') =~ /.*Hunk #[0-9]+ (ignored|failed).*/
   end
 
   private
