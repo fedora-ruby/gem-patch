@@ -20,6 +20,16 @@ class Gem::Commands::PatchCommand < Gem::Command
     add_option('--patch-options=OPTIONS', 'Pass additional OPTIONS to the patch command') do |opts, options|
       options[:patch_options] = opts
     end
+
+    # Copy additional files or dirs to the unpacked .gem file before patching
+    add_option('-cPATHS', '--copy-in=PATHS', 'Copy in additional files or dirs before patching separated by comma') do |paths, options|
+      options[:copy_in] = paths
+    end
+
+    # Remove files or dirs before rebuilt
+    add_option('-rPATHS', '--remove=PATHS', 'Remove files or dirs before repacking the patched gem') do |paths, options|
+      options[:remove] = paths
+    end
     
     # Set output file to FILE instead of overwritting
     add_option('-oFILE', '--output=FILE', 'Set output FILE') do |file, options|

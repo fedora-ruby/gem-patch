@@ -34,13 +34,14 @@ class Gem::Patcher
 
     check_patch_command_is_installed
     extract_gem
+    copy_in(options[:copy_in], @target_dir) if options[:copy_in]
 
     # Apply all patches
     patches.each do |patch|
       info 'Applying patch ' + patch
       @std << apply_patch(patch, options)
     end
-
+    remove(options[:remove], @target_dir) if options[:remove]
     build_patched_gem
 
     options[:outfile] ||= File.join(@output_dir, @package.spec.file_name)
@@ -63,6 +64,7 @@ class Gem::Patcher
     
     patch_path = File.expand_path(patch)
     info 'Path to the patch to apply: ' + patch_path
+    copy_in(options[:copy_in], @target_dir) if options[:copy_in]
 
     # Apply the patch by calling 'patch -pNUMBER < patch'
     Dir.chdir @target_dir do
@@ -131,6 +133,24 @@ class Gem::Patcher
     # Change dir and build the patched gem
     Dir.chdir @target_dir do
       patched_package.build false
+    end
+  end
+
+  def copy_in(paths, target)
+    origins = paths.split(',')
+    origins.each do |p|
+      if Dir.exists?(p) || File.exists?(p)
+        FileUtils.cp_r(p, File.join(target, File.basename(p)))
+      else
+        FileUtils.cp_r(File.join(Dir.pwd, p), File.join(target, p))
+      end
+    end
+  end
+
+  def remove(paths, target)
+    removals = paths.split(',')
+    removals.each do |r|
+      FileUtils.rm_r File.join(target, r)
     end
   end
 
