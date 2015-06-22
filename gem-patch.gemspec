@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name     = 'gem-patch'
-  s.version  = '0.1.5'
+  s.version  = '0.1.6'
   s.platform = Gem::Platform::RUBY
   s.summary     = 'RubyGems plugin for patching gems.'
   s.description = <<-EOF
