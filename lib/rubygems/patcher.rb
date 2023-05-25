@@ -77,7 +77,7 @@ class Gem::Patcher
 
         unless $?.nil?
           if $?.exitstatus == 0
-            @output << "Succesfully patched with #{patch}"
+            @output << "Successfully patched with #{patch}"
           else
             @output << "Error: Unable to patch with #{patch}."
 
